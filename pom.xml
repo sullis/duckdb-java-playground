@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.github.sullis</groupId>
-  <artifactId>foobar-playground</artifactId>
+  <artifactId>duckdb-java-playground</artifactId>
   <packaging>jar</packaging>
-  <name>foobar-playground</name>
+  <name>duckdb-java-playground</name>
   <version>0.0.1-SNAPSHOT</version>
-  <description>foobar-playground</description>
+  <description>duckdb-java-playground</description>
   <licenses>
     <license>
       <name>Apache License 2.0</name>
