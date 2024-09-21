@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 public class DuckdbTest {
   @BeforeAll
   public static void loadDriver() throws Exception {
@@ -22,9 +21,8 @@ public class DuckdbTest {
 
   @Test
   public void happyPath() throws Exception {
-    Duckdb db = new Duckdb();
-    db.initializeIceberg();
-    try (DuckDBConnection conn = db.getConnection()) {
+    Duckdb.initializeIceberg();
+    try (DuckDBConnection conn = Duckdb.getConnection()) {
       assertThat(conn).isNotNull();
       assertThat(conn.isClosed()).isFalse();
     }
