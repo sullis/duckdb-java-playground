@@ -3,6 +3,7 @@ package io.github.sullis.duckdb.playground;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 import org.duckdb.DuckDBConnection;
 
 public class Duckdb {
@@ -23,7 +24,7 @@ public class Duckdb {
   private Duckdb() { }
 
   static public void initializeIceberg() throws SQLException {
-    try (DuckDBConnection conn = getConnection()) {
+    try (DuckDBConnection conn = getConnection(false)) {
       try (Statement statement = conn.createStatement()) {
         // https://duckdb.org/docs/extensions/iceberg
         statement.addBatch("install iceberg;");
@@ -38,8 +39,12 @@ public class Duckdb {
     }
   }
 
-  public static DuckDBConnection getConnection()
+  public static DuckDBConnection getConnection(boolean readOnly)
       throws SQLException {
-    return (DuckDBConnection) DriverManager.getConnection("jdbc:duckdb:");
+    Properties props = new Properties();
+    if (readOnly) {
+      props.setProperty("duckdb.read_only", "true");
+    }
+    return (DuckDBConnection) DriverManager.getConnection("jdbc:duckdb:", props);
   }
 }

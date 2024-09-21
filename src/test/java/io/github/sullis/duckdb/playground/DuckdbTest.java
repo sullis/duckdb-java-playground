@@ -22,8 +22,9 @@ public class DuckdbTest {
   @Test
   public void happyPath() throws Exception {
     Duckdb.initializeIceberg();
-    try (DuckDBConnection conn = Duckdb.getConnection()) {
+    try (DuckDBConnection conn = Duckdb.getConnection(false)) {
       assertThat(conn).isNotNull();
+      assertThat(conn.isReadOnly()).isFalse();
       assertThat(conn.isClosed()).isFalse();
     }
   }
