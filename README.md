@@ -2,6 +2,6 @@
 
 
 see also:
-https://duckdb.org/docs/api/java.html
+[DuckDB JDBC API](https://duckdb.org/docs/api/java.html)
 
 
