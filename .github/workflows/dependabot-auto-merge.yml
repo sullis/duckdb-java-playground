@@ -6,9 +6,13 @@ permissions:
   pull-requests: write
 
 jobs:
+  build:
+    if: github.actor == 'dependabot[bot]'
+    uses: ./.github/workflows/shared-build.yml
   dependabot:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
+    needs: [ build ]
     steps:
       - name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --squash "$PR_URL"
