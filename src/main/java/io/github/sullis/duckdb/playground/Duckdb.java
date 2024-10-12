@@ -1,54 +1,64 @@
 package io.github.sullis.duckdb.playground;
 
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import org.duckdb.DuckDBConnection;
 
 public class Duckdb {
   public static final String DRIVER_CLASS_NAME = "org.duckdb.DuckDBDriver";
 
-  public static void loadDriver() throws ClassNotFoundException {
-    Class.forName(DRIVER_CLASS_NAME);
-  }
-
   static {
     try {
-      loadDriver();
+      Class.forName(DRIVER_CLASS_NAME);
     } catch (ClassNotFoundException ex) {
       throw new RuntimeException("unable to load DuckDB driver", ex);
     }
   }
 
-  private Duckdb() { }
+  private final String jdbcUrl;
 
-  static public void initializeExtensions() throws SQLException {
-    try (DuckDBConnection conn = getConnection(false)) {
+  public Duckdb() {
+    this("jdbc:duckdb:");
+  }
+
+  public Duckdb(String jdbcUrl) {
+    this.jdbcUrl = jdbcUrl;
+  }
+
+  public void initializeExtensions(List<String> extensions) throws SQLException {
+    try (DuckDBConnection conn = getConnection()) {
       try (Statement statement = conn.createStatement()) {
-        // https://duckdb.org/docs/extensions/iceberg
-        statement.addBatch("install iceberg;");
-        statement.addBatch("load iceberg;");
-
-        // https://duckdb.org/docs/extensions/httpfs/overview.html
-        statement.addBatch("install httpfs;");
-        statement.addBatch("load httpfs;");
-
-        // https://duckdb.org/docs/extensions/json
-        statement.addBatch("install json;");
-        statement.addBatch("load json;");
-
+        for (String extension : extensions) {
+          statement.addBatch("install " + extension + ";");
+          statement.addBatch("load " + extension + ";");
+        }
         statement.executeBatch();
       }
     }
   }
 
-  public static DuckDBConnection getConnection(boolean readOnly)
+  public List<String> listExtensions() throws SQLException {
+    List<String> result = new ArrayList<>();
+    try (DuckDBConnection conn = getConnection()) {
+      try (Statement statement = conn.createStatement()) {
+        try (ResultSet rs = statement.executeQuery("SELECT extension_name FROM duckdb_extensions();")) {
+          while (rs.next()) {
+            result.add(rs.getString("extension_name"));
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  public DuckDBConnection getConnection()
       throws SQLException {
     Properties props = new Properties();
-    if (readOnly) {
-      props.setProperty("duckdb.read_only", "true");
-    }
-    return (DuckDBConnection) DriverManager.getConnection("jdbc:duckdb:", props);
+    return (DuckDBConnection) DriverManager.getConnection(jdbcUrl, props);
   }
 }
