@@ -23,7 +23,7 @@ public class Duckdb {
 
   private Duckdb() { }
 
-  static public void initializeIceberg() throws SQLException {
+  static public void initializeExtensions() throws SQLException {
     try (DuckDBConnection conn = getConnection(false)) {
       try (Statement statement = conn.createStatement()) {
         // https://duckdb.org/docs/extensions/iceberg
@@ -33,6 +33,10 @@ public class Duckdb {
         // https://duckdb.org/docs/extensions/httpfs/overview.html
         statement.addBatch("install httpfs;");
         statement.addBatch("load httpfs;");
+
+        // https://duckdb.org/docs/extensions/json
+        statement.addBatch("install json;");
+        statement.addBatch("load json;");
 
         statement.executeBatch();
       }
