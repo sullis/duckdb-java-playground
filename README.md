@@ -4,7 +4,7 @@
 see also:
 [DuckDB JDBC API](https://duckdb.org/docs/api/java.html)
 
-# extension
+# extensions
 - [aws](https://duckdb.org/docs/extensions/aws)
 - [iceberg](https://duckdb.org/docs/extensions/iceberg)
 
