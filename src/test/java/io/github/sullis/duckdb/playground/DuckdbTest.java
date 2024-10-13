@@ -1,14 +1,12 @@
 package io.github.sullis.duckdb.playground;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.sql.DriverManager;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.duckdb.DuckDBConnection;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
