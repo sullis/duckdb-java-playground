@@ -49,20 +49,14 @@ public class DuckdbTest {
 
   @BeforeAll
   public static void setupDuckDb() throws Exception {
+    File f = new File(dbfile);
+    f.deleteOnExit();
     duckdb = new Duckdb("jdbc:duckdb:" + dbfile);
     duckdb.initializeExtensions(EXTENSIONS);
     Set<String> drivers = DriverManager.drivers()
         .map(d -> d.getClass().getName())
         .collect(Collectors.toSet());
     assertThat(drivers).contains(Duckdb.DRIVER_CLASS_NAME);
-  }
-
-  @AfterAll
-  public static void cleanup() {
-    File f = new File(dbfile);
-    if (f.exists()) {
-      f.delete();
-    }
   }
 
   @Test
