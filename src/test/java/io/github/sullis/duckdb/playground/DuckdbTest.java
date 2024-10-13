@@ -64,11 +64,15 @@ public class DuckdbTest {
       assertThat(conn.isClosed()).isFalse();
     }
 
-    final String tableName = "test_" + System.currentTimeMillis();
+    final String tableName = "cities";
 
     duckdb.createTable(tableName,
-        Map.of("id", "integer"),
-        List.of("id"));
+        Map.of("name", "varchar"),
+        List.of("name"));
+
+    duckdb.executeUpdate("insert into "
+        + tableName
+        + " values('Portland');");
 
     assertThat(duckdb.listTables())
         .contains(tableName);

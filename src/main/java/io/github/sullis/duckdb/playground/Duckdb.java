@@ -63,6 +63,7 @@ public class Duckdb {
       try (Statement statement = conn.createStatement()) {
         try (ResultSet rs = statement.executeQuery("show tables;")) {
           while (rs.next()) {
+            System.out.println("zzz " + rs.getObject(0));
             result.add(rs.getString(0));
           }
         }
@@ -111,8 +112,9 @@ public class Duckdb {
 
   }
 
-  private void executeUpdate(CharSequence sql) throws SQLException {
+  public void executeUpdate(CharSequence sql) throws SQLException {
     try (DuckDBConnection conn = getConnection()) {
+      conn.setAutoCommit(true);
       try (Statement statement = conn.createStatement()) {
         statement.executeUpdate(sql.toString());
       }
