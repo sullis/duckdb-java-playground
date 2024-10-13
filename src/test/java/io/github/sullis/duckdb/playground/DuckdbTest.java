@@ -1,11 +1,14 @@
 package io.github.sullis.duckdb.playground;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.sql.DriverManager;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.duckdb.DuckDBConnection;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -41,16 +44,25 @@ public class DuckdbTest {
       "c2": "c2-value"
   }""";
 
+  private static final String dbfile = "/tmp/testdb-" + System.currentTimeMillis();
   private static Duckdb duckdb;
 
   @BeforeAll
-  public static void verifyJdbcDriver() throws Exception {
-    duckdb = new Duckdb();
+  public static void setupDuckDb() throws Exception {
+    duckdb = new Duckdb("jdbc:duckdb:" + dbfile);
     duckdb.initializeExtensions(EXTENSIONS);
     Set<String> drivers = DriverManager.drivers()
         .map(d -> d.getClass().getName())
         .collect(Collectors.toSet());
     assertThat(drivers).contains(Duckdb.DRIVER_CLASS_NAME);
+  }
+
+  @AfterAll
+  public static void cleanup() {
+    File f = new File(dbfile);
+    if (f.exists()) {
+      f.delete();
+    }
   }
 
   @Test
@@ -70,14 +82,18 @@ public class DuckdbTest {
         Map.of("name", "varchar"),
         List.of("name"));
 
-    duckdb.executeUpdate("insert into "
-        + tableName
-        + " values('Portland');");
 
     assertThat(duckdb.listTables())
         .contains(tableName);
 
     assertThat(duckdb.countRows(tableName))
         .isEqualTo(0);
+
+    duckdb.executeUpdate("insert into "
+        + tableName
+        + " values('Portland');");
+
+    assertThat(duckdb.countRows(tableName))
+        .isEqualTo(1);
   }
 }

@@ -60,12 +60,9 @@ public class Duckdb {
   public List<String> listTables() throws SQLException {
     List<String> result = new ArrayList<>();
     try (DuckDBConnection conn = getConnection()) {
-      try (Statement statement = conn.createStatement()) {
-        try (ResultSet rs = statement.executeQuery("show tables;")) {
-          while (rs.next()) {
-            System.out.println("zzz " + rs.getObject(0));
-            result.add(rs.getString(0));
-          }
+      try (ResultSet rs = conn.getMetaData().getTables(null, null, null, null)) {
+        while (rs.next()) {
+          result.add(rs.getString("TABLE_NAME"));
         }
       }
     }
@@ -105,7 +102,7 @@ public class Duckdb {
       try (Statement statement = conn.createStatement()) {
         try (ResultSet rs = statement.executeQuery("select count(*) from " + tableName + ";")) {
           rs.next();
-          return rs.getInt(0);
+          return rs.getInt(1);
         }
       }
     }
