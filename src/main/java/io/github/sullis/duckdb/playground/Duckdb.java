@@ -6,7 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
+import java.util.StringJoiner;
 import org.duckdb.DuckDBConnection;
 
 public class Duckdb {
@@ -56,9 +57,65 @@ public class Duckdb {
     return result;
   }
 
+  public List<String> listTables() throws SQLException {
+    List<String> result = new ArrayList<>();
+    try (DuckDBConnection conn = getConnection()) {
+      try (Statement statement = conn.createStatement()) {
+        try (ResultSet rs = statement.executeQuery("show tables;")) {
+          while (rs.next()) {
+            result.add(rs.getString(0));
+          }
+        }
+      }
+    }
+    return result;
+  }
+
   public DuckDBConnection getConnection()
       throws SQLException {
-    Properties props = new Properties();
-    return (DuckDBConnection) DriverManager.getConnection(jdbcUrl, props);
+    return (DuckDBConnection) DriverManager.getConnection(jdbcUrl);
+  }
+
+  public void createTable(String tableName,
+      Map<String, String> columns,
+      List<String> primaryKeys) throws SQLException {
+
+    StringBuilder sql = new StringBuilder();
+    sql.append("CREATE TABLE ");
+    sql.append(tableName);
+    sql.append(" (");
+
+    StringJoiner columnJoiner = new StringJoiner(",");
+    for (Map.Entry column: columns.entrySet()) {
+      columnJoiner.add(column.getKey() + " " + column.getValue());
+    }
+    sql.append(columnJoiner.toString());
+
+    if (primaryKeys != null) {
+      sql.append(" , PRIMARY KEY(" + String.join(",", primaryKeys) + ") ");
+    };
+    sql.append(") ");
+    sql.append(";");
+    executeUpdate(sql);
+  }
+
+  public int countRows(String tableName) throws SQLException {
+    try (DuckDBConnection conn = getConnection()) {
+      try (Statement statement = conn.createStatement()) {
+        try (ResultSet rs = statement.executeQuery("select count(*) from " + tableName + ";")) {
+          rs.next();
+          return rs.getInt(0);
+        }
+      }
+    }
+
+  }
+
+  private void executeUpdate(CharSequence sql) throws SQLException {
+    try (DuckDBConnection conn = getConnection()) {
+      try (Statement statement = conn.createStatement()) {
+        statement.executeUpdate(sql.toString());
+      }
+    }
   }
 }

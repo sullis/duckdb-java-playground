@@ -2,6 +2,7 @@ package io.github.sullis.duckdb.playground;
 
 import java.sql.DriverManager;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.duckdb.DuckDBConnection;
@@ -21,6 +22,24 @@ public class DuckdbTest {
       // https://duckdb.org/docs/extensions/json
       "json"
   );
+
+  private static final String JSON1 = """
+  {
+      "a1": "a1-value",
+      "a2": "a2-value"
+  }""";
+
+  private static final String JSON2 = """
+  {
+      "b1": "b1-value",
+      "b2": "b2-value"
+  }""";
+
+  private static final String JSON3 = """
+  {
+      "c1": "c1-value",
+      "c2": "c2-value"
+  }""";
 
   private static Duckdb duckdb;
 
@@ -44,5 +63,17 @@ public class DuckdbTest {
       assertThat(conn.isReadOnly()).isFalse();
       assertThat(conn.isClosed()).isFalse();
     }
+
+    final String tableName = "test_" + System.currentTimeMillis();
+
+    duckdb.createTable(tableName,
+        Map.of("id", "integer"),
+        List.of("id"));
+
+    assertThat(duckdb.listTables())
+        .contains(tableName);
+
+    assertThat(duckdb.countRows(tableName))
+        .isEqualTo(0);
   }
 }
