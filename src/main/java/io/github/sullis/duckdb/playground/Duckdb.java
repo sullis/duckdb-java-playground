@@ -173,7 +173,11 @@ public class Duckdb {
     return rows;
   }
 
-  public <T> T queryForSingleValue(CharSequence sql, Class<T> clazz) throws Exception {
+  public org.duckdb.JsonNode queryForJsonNode(CharSequence sql) throws SQLException {
+    return queryForSingleValue(sql, org.duckdb.JsonNode.class);
+  }
+
+  public <T> T queryForSingleValue(CharSequence sql, Class<T> clazz) throws SQLException {
     try (DuckDBConnection conn = getConnection()) {
       try (Statement statement = conn.createStatement()) {
         try (ResultSet rs = statement.executeQuery(sql.toString())) {
