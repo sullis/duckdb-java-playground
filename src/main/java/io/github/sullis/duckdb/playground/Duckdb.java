@@ -1,10 +1,12 @@
 package io.github.sullis.duckdb.playground;
 
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -31,7 +33,8 @@ public class Duckdb {
     this.jdbcUrl = jdbcUrl;
   }
 
-  public void initializeExtensions(List<String> extensions) throws SQLException {
+  public void initializeExtensions(List<String> extensions)
+      throws SQLException {
     try (DuckDBConnection conn = getConnection()) {
       try (Statement statement = conn.createStatement()) {
         for (String extension : extensions) {
@@ -43,7 +46,8 @@ public class Duckdb {
     }
   }
 
-  public List<String> listExtensions() throws SQLException {
+  public List<String> listExtensions()
+      throws SQLException {
     List<String> result = new ArrayList<>();
     try (DuckDBConnection conn = getConnection()) {
       try (Statement statement = conn.createStatement()) {
@@ -57,7 +61,8 @@ public class Duckdb {
     return result;
   }
 
-  public List<String> listTables() throws SQLException {
+  public List<String> listTables()
+      throws SQLException {
     List<String> result = new ArrayList<>();
     try (DuckDBConnection conn = getConnection()) {
       try (ResultSet rs = conn.getMetaData().getTables(null, null, null, null)) {
@@ -74,9 +79,8 @@ public class Duckdb {
     return (DuckDBConnection) DriverManager.getConnection(jdbcUrl);
   }
 
-  public void createTable(String tableName,
-      Map<String, String> columns,
-      List<String> primaryKeys) throws SQLException {
+  public void createTable(String tableName, Map<String, String> columns, List<String> primaryKeys)
+      throws SQLException {
 
     StringBuilder sql = new StringBuilder();
     sql.append("CREATE TABLE ");
@@ -84,20 +88,22 @@ public class Duckdb {
     sql.append(" (");
 
     StringJoiner columnJoiner = new StringJoiner(",");
-    for (Map.Entry column: columns.entrySet()) {
+    for (Map.Entry column : columns.entrySet()) {
       columnJoiner.add(column.getKey() + " " + column.getValue());
     }
     sql.append(columnJoiner.toString());
 
     if (primaryKeys != null) {
       sql.append(" , PRIMARY KEY(" + String.join(",", primaryKeys) + ") ");
-    };
+    }
+    ;
     sql.append(") ");
     sql.append(";");
     executeUpdate(sql);
   }
 
-  public int countRows(String tableName) throws SQLException {
+  public int countRows(String tableName)
+      throws SQLException {
     try (DuckDBConnection conn = getConnection()) {
       try (Statement statement = conn.createStatement()) {
         try (ResultSet rs = statement.executeQuery("select count(*) from " + tableName + ";")) {
@@ -106,7 +112,6 @@ public class Duckdb {
         }
       }
     }
-
   }
 
   public void executeUpdate(CharSequence sql) throws SQLException {
@@ -114,6 +119,70 @@ public class Duckdb {
       conn.setAutoCommit(true);
       try (Statement statement = conn.createStatement()) {
         statement.executeUpdate(sql.toString());
+      }
+    }
+  }
+
+  public void insertInto(String tableName, Map<String, Object> rowData)
+      throws SQLException {
+    List<String> columnNames = new ArrayList<>(rowData.keySet());
+    StringBuilder sql = new StringBuilder();
+    sql.append("insert into ");
+    sql.append(tableName);
+    sql.append(" ( ");
+    StringJoiner colJoiner = new StringJoiner(",");
+    columnNames.forEach(colJoiner::add);
+    sql.append(colJoiner);
+    sql.append(" ) values ( ");
+    StringJoiner valJoiner = new StringJoiner(",");
+    columnNames.forEach(c -> valJoiner.add("?"));
+    sql.append(valJoiner);
+    sql.append(" ); ");
+
+    try (DuckDBConnection conn = getConnection()) {
+      conn.setAutoCommit(true);
+      try (PreparedStatement statement = conn.prepareStatement(sql.toString())) {
+        int paramIndex = 0;
+        for (String colName : columnNames) {
+          paramIndex++;
+          Object colValue = rowData.get(colName);
+          statement.setObject(paramIndex, colValue);
+        }
+        statement.execute();
+      }
+    }
+  }
+
+  public List<Map<String, Object>> query(String sql) throws SQLException {
+    List<Map<String, Object>> rows = new ArrayList<>();
+    try (DuckDBConnection conn = getConnection()) {
+      try (Statement statement = conn.createStatement()) {
+        try (ResultSet rs = statement.executeQuery(sql.toString())) {
+          int columnCount = rs.getMetaData().getColumnCount();
+          while (rs.next()) {
+            Map<String, Object> row = new HashMap<>();
+             for (int i = 0; i < columnCount; i++) {
+               String colName = rs.getMetaData().getColumnName(i+1);
+               row.put(colName.toString(), rs.getObject(colName));
+             }
+            rows.add(row);
+          }
+        }
+      }
+    }
+    return rows;
+  }
+
+  public <T> T queryForSingleValue(CharSequence sql, Class<T> clazz) throws Exception {
+    try (DuckDBConnection conn = getConnection()) {
+      try (Statement statement = conn.createStatement()) {
+        try (ResultSet rs = statement.executeQuery(sql.toString())) {
+          if (rs.next()) {
+            return (T) rs.getObject(1);
+          } else {
+            return (T) null;
+          }
+        }
       }
     }
   }

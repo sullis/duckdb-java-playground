@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.duckdb.DuckDBConnection;
 import org.junit.jupiter.api.BeforeAll;
@@ -68,12 +69,14 @@ public class DuckdbTest {
       assertThat(conn.isClosed()).isFalse();
     }
 
-    final String tableName = "cities";
+    final String tableName = "things";
 
     duckdb.createTable(tableName,
-        Map.of("name", "varchar"),
-        List.of("name"));
-
+        Map.of("id", "varchar",
+              "a", "json",
+              "b", "json",
+              "c", "json"),
+        List.of("id"));
 
     assertThat(duckdb.listTables())
         .contains(tableName);
@@ -81,11 +84,25 @@ public class DuckdbTest {
     assertThat(duckdb.countRows(tableName))
         .isEqualTo(0);
 
-    duckdb.executeUpdate("insert into "
-        + tableName
-        + " values('Portland');");
+    final UUID rowId = UUID.randomUUID();
+
+    duckdb.insertInto(tableName,
+        Map.of("id", rowId.toString(),
+          "a", JSON1,
+          "b", JSON2,
+          "c", JSON3));
 
     assertThat(duckdb.countRows(tableName))
         .isEqualTo(1);
+
+    String singleValue = duckdb.queryForSingleValue(
+        "select id from " + tableName,
+        String.class);
+    assertThat(singleValue).isEqualTo(rowId.toString());
+
+    List<Map<String, Object>> rowData = duckdb.query("select id from " + tableName);
+    assertThat(rowData).contains(
+        Map.of("id", rowId.toString()));
+
   }
 }
