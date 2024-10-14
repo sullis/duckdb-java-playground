@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.duckdb.DuckDBConnection;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,19 +29,19 @@ public class DuckdbTest {
   private static final String JSON1 = """
   {
       "a1": "a1-value",
-      "a2": "a2-value"
+      "things": ["aThing1", "aThing2"]
   }""";
 
   private static final String JSON2 = """
   {
       "b1": "b1-value",
-      "b2": "b2-value"
+      "things": ["bThing1", "bThing2"]
   }""";
 
   private static final String JSON3 = """
   {
       "c1": "c1-value",
-      "c2": "c2-value"
+      "things": ["cThing1", "cThing2"]
   }""";
 
   private static final String dbfile = "/tmp/testdb-" + System.currentTimeMillis();
@@ -110,6 +111,18 @@ public class DuckdbTest {
     List<Map<String, Object>> rowData = duckdb.query("select id from " + tableName);
     assertThat(rowData).contains(
         Map.of("id", rowId.toString()));
+
+    var things = duckdb.query("select a.things as athings, b.things as bthings, c.things as cthings from " + tableName);
+    System.out.println(things);
+    assertThat(things).hasSize(1);
+    var thing0 = things.get(0);
+    assertThat(thing0).containsKeys("athings", "bthings", "cthings");
+    var jsonNode0 = (org.duckdb.JsonNode) thing0.get("athings");
+    assertThat(jsonNode0.isArray()).isTrue();
+    assertThatJson(jsonNode0.toString())
+        .isEqualTo("""
+          [ "aThing1", "aThing2" ]
+            """);
 
   }
 }
