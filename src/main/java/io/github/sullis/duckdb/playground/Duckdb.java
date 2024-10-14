@@ -177,6 +177,19 @@ public class Duckdb {
     return queryForSingleValue(sql, org.duckdb.JsonNode.class);
   }
 
+  public String queryForJsonString(CharSequence sql) throws SQLException {
+    var node = queryForJsonNode(sql);
+    if (!node.isString()) {
+      throw new SQLException("wrong type of JsonNode.  Expected a string");
+    }
+    String s = node.toString();
+    if (s.isEmpty()) {
+      return s;
+    } else {
+      return s.substring(1, s.length() - 1);
+    }
+  }
+
   public <T> T queryForSingleValue(CharSequence sql, Class<T> clazz) throws SQLException {
     try (DuckDBConnection conn = getConnection()) {
       try (Statement statement = conn.createStatement()) {

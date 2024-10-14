@@ -104,13 +104,8 @@ public class DuckdbTest {
     assertThat(aJsonValue.isString()).isTrue();
     assertThat(aJsonValue.toString()).isEqualTo("\"a1-value\"");
 
-    var bJsonValue = duckdb.queryForJsonNode("select b.b1 from " + tableName);
-    assertThat(bJsonValue.isString()).isTrue();
-    assertThat(bJsonValue.toString()).isEqualTo("\"b1-value\"");
-
-    var cJsonValue = duckdb.queryForJsonNode("select c.c1 from " + tableName);
-    assertThat(cJsonValue.isString()).isTrue();
-    assertThat(cJsonValue.toString()).isEqualTo("\"c1-value\"");
+    var aJsonString = duckdb.queryForJsonString("select a.a1 from " + tableName);
+    assertThat(aJsonString).isEqualTo("a1-value");
 
     List<Map<String, Object>> rowData = duckdb.query("select id from " + tableName);
     assertThat(rowData).contains(
