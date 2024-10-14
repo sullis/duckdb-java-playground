@@ -124,5 +124,14 @@ public class DuckdbTest {
           [ "aThing1", "aThing2" ]
             """);
 
+    var flattenResult = duckdb.queryForSingleValue("""
+      SELECT flatten([
+          [1, 2],
+          [3, 4]
+      ]) as foobar;""", java.sql.Array.class);
+
+    assertThat(flattenResult.toString())
+        .isEqualTo("[1, 2, 3, 4]");
   }
+
 }
