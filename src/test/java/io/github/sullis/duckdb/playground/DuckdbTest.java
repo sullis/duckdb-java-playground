@@ -44,11 +44,11 @@ public class DuckdbTest {
       "things": ["cThing1", "cThing2"]
   }""";
 
-  private static final String dbfile = "/tmp/testdb-" + System.currentTimeMillis();
   private static Duckdb duckdb;
 
   @BeforeAll
   public static void setupDuckDb() throws Exception {
+    final String dbfile = "/tmp/testdb-" + System.currentTimeMillis();
     File f = new File(dbfile);
     f.deleteOnExit();
     duckdb = new Duckdb("jdbc:duckdb:" + dbfile);
@@ -61,8 +61,7 @@ public class DuckdbTest {
 
   @Test
   public void happyPath() throws Exception {
-    assertThat(duckdb.listExtensions())
-        .contains("iceberg", "json", "httpfs", "aws");
+    assertThat(duckdb.listExtensions()).contains("iceberg", "json", "httpfs", "aws");
 
     try (DuckDBConnection conn = duckdb.getConnection()) {
       assertThat(conn).isNotNull();
@@ -72,33 +71,19 @@ public class DuckdbTest {
 
     final String tableName = "things";
 
-    duckdb.createTable(tableName,
-        Map.of("id", "varchar",
-              "a", "json",
-              "b", "json",
-              "c", "json"),
-        List.of("id"));
+    duckdb.createTable(tableName, Map.of("id", "varchar", "a", "json", "b", "json", "c", "json"), List.of("id"));
 
-    assertThat(duckdb.listTables())
-        .contains(tableName);
+    assertThat(duckdb.listTables()).contains(tableName);
 
-    assertThat(duckdb.countRows(tableName))
-        .isEqualTo(0);
+    assertThat(duckdb.countRows(tableName)).isEqualTo(0);
 
     final UUID rowId = UUID.randomUUID();
 
-    duckdb.insertInto(tableName,
-        Map.of("id", rowId.toString(),
-          "a", JSON1,
-          "b", JSON2,
-          "c", JSON3));
+    duckdb.insertInto(tableName, Map.of("id", rowId.toString(), "a", JSON1, "b", JSON2, "c", JSON3));
 
-    assertThat(duckdb.countRows(tableName))
-        .isEqualTo(1);
+    assertThat(duckdb.countRows(tableName)).isEqualTo(1);
 
-    String singleValue = duckdb.queryForSingleValue(
-        "select id from " + tableName,
-        String.class);
+    String singleValue = duckdb.queryForSingleValue("select id from " + tableName, String.class);
     assertThat(singleValue).isEqualTo(rowId.toString());
 
     var aJsonValue = duckdb.queryForJsonNode("select a.a1 from " + tableName);
@@ -109,8 +94,7 @@ public class DuckdbTest {
     assertThat(aJsonString).isEqualTo("a1-value");
 
     List<Map<String, Object>> rowData = duckdb.query("select id from " + tableName);
-    assertThat(rowData).contains(
-        Map.of("id", rowId.toString()));
+    assertThat(rowData).contains(Map.of("id", rowId.toString()));
 
     var things = duckdb.query("select a.things as athings, b.things as bthings, c.things as cthings from " + tableName);
     System.out.println(things);
@@ -119,11 +103,13 @@ public class DuckdbTest {
     assertThat(thing0).containsKeys("athings", "bthings", "cthings");
     var jsonNode0 = (org.duckdb.JsonNode) thing0.get("athings");
     assertThat(jsonNode0.isArray()).isTrue();
-    assertThatJson(jsonNode0.toString())
-        .isEqualTo("""
-          [ "aThing1", "aThing2" ]
-            """);
+    assertThatJson(jsonNode0.toString()).isEqualTo("""
+        [ "aThing1", "aThing2" ]
+        """);
+  }
 
+  @Test
+  void flattenExample() throws Exception {
     var flattenResult = duckdb.queryForSingleValue("""
       SELECT flatten([
           [1, 2],
@@ -132,6 +118,9 @@ public class DuckdbTest {
 
     assertThat(flattenResult.toString())
         .isEqualTo("[1, 2, 3, 4]");
+
+      Object[] objects = (Object[]) flattenResult.getArray();
+      assertThat(objects[0]).isInstanceOf(Integer.class);
   }
 
 }
