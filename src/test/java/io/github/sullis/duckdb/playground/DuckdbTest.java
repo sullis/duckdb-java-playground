@@ -84,7 +84,11 @@ public class DuckdbTest {
 
     final UUID rowId = UUID.randomUUID();
 
-    duckdb.insertInto(tableName, Map.of("id", rowId.toString(), "a", JSON1, "b", JSON2, "c", JSON3));
+    duckdb.insertInto(tableName,
+            Map.of("id", rowId.toString(),
+                    "a", JSON1,
+                    "b", JSON2,
+                    "c", JSON3));
 
     assertThat(duckdb.countRows(tableName)).isEqualTo(1);
 
