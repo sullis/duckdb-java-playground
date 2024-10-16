@@ -71,7 +71,12 @@ public class DuckdbTest {
 
     final String tableName = "things";
 
-    duckdb.createTable(tableName, Map.of("id", "varchar", "a", "json", "b", "json", "c", "json"), List.of("id"));
+    duckdb.createTable(tableName,
+            Map.of("id", "varchar",
+                    "a", "json",
+                    "b", "json",
+                    "c", "json"),
+            List.of("id"));
 
     assertThat(duckdb.listTables()).contains(tableName);
 
