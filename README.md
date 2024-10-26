@@ -6,7 +6,9 @@ see also:
 
 # extensions
 - [aws](https://duckdb.org/docs/extensions/aws)
+- [httpfs](https://duckdb.org/docs/extensions/httpfs/overview.html)
 - [iceberg](https://duckdb.org/docs/extensions/iceberg)
+- [json](https://duckdb.org/docs/extensions/json)
 
 # articles
 - [analyze JSON data using SQL](https://motherduck.com/blog/analyze-json-data-using-sql/)
