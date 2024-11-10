@@ -19,6 +19,7 @@ see also:
 
 # videos
 - [duckdb: crunching data anywhere](https://www.youtube.com/watch?v=9Rdwh0rNaf0)
+- [Motherduck - data analytics](https://www.youtube.com/watch?v=hZiTg_995e4)
 
 
 
