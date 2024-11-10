@@ -17,5 +17,8 @@ see also:
 - [analyze JSON data using SQL](https://motherduck.com/blog/analyze-json-data-using-sql/)
 - [Changing Data with Confidence and ACID](https://duckdb.org/2024/09/25/changing-data-with-confidence-and-acid.html)
 
+# videos
+- [duckdb: crunching data anywhere](https://www.youtube.com/watch?v=9Rdwh0rNaf0)
+
 
 
