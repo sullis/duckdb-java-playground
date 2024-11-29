@@ -31,6 +31,8 @@ target/
 .project
 .settings/
 
+pom.xml.versionsBackup
+
 .gradle
 build/
 
