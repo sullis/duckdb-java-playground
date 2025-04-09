@@ -9,6 +9,7 @@ see also:
 - [httpfs](https://duckdb.org/docs/extensions/httpfs/overview.html)
 - [iceberg](https://duckdb.org/docs/extensions/iceberg)
 - [json](https://duckdb.org/docs/extensions/json)
+- [parquet](https://duckdb.org/docs/extensions/parquet)
 
 # duckdb iceberg
 - [predicate pushdown PR](https://github.com/duckdb/duckdb_iceberg/pull/78)
