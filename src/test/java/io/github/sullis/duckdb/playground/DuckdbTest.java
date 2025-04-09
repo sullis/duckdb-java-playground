@@ -23,7 +23,9 @@ public class DuckdbTest {
       // https://duckdb.org/docs/extensions/aws
       "aws",
       // https://duckdb.org/docs/extensions/json
-      "json"
+      "json",
+      // https://duckdb.org/docs/extensions/parquet
+      "parquet"
   );
 
   private static final String JSON1 = """
@@ -61,7 +63,7 @@ public class DuckdbTest {
 
   @Test
   public void happyPath() throws Exception {
-    assertThat(duckdb.listExtensions()).contains("iceberg", "json", "httpfs", "aws");
+    assertThat(duckdb.listExtensions()).contains("iceberg", "json", "httpfs", "aws", "parquet");
 
     try (DuckDBConnection conn = duckdb.getConnection()) {
       assertThat(conn).isNotNull();
