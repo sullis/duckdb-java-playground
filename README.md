@@ -12,7 +12,7 @@ see also:
 - [parquet](https://duckdb.org/docs/extensions/parquet)
 
 # duckdb iceberg
-- [predicate pushdown PR](https://github.com/duckdb/duckdb_iceberg/pull/78)
+- [predicate pushdown](https://github.com/duckdb/duckdb-iceberg/issues/2)
 
 # articles
 - [analyze JSON data using SQL](https://motherduck.com/blog/analyze-json-data-using-sql/)
