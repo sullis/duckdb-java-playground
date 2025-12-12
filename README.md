@@ -23,6 +23,7 @@ see also:
 - [Motherduck - data analytics](https://www.youtube.com/watch?v=hZiTg_995e4)
 - [DuckDB and MotherDuck](https://www.youtube.com/watch?v=tip96F_u8lc)
 - [Processing Trillions of Records at Okta](https://www.youtube.com/watch?v=TrmJilG4GXk)
+- [Scaling DuckDb in the Cloud](https://www.youtube.com/watch?v=wIOYAIgPdqw) - MotherDuck
 
 
 
