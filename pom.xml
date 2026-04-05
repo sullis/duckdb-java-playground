@@ -4,7 +4,6 @@
 
   <groupId>io.github.sullis</groupId>
   <artifactId>duckdb-java-playground</artifactId>
-  <packaging>jar</packaging>
   <name>duckdb-java-playground</name>
   <version>0.0.1-SNAPSHOT</version>
   <description>duckdb-java-playground</description>
@@ -18,10 +17,12 @@
   <properties>
     <logback.version>1.5.32</logback.version>
     <slf4j.version>2.0.17</slf4j.version>
-    <skip.tests>false</skip.tests>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <skipTests>false</skipTests>
   </properties>
 
-    <dependencyManagement>
+  <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.testcontainers</groupId>
@@ -110,53 +111,64 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
-        <scope>test</scope>
-    </dependency>
-      <dependency>
-          <groupId>org.junit.jupiter</groupId>
-          <artifactId>junit-jupiter-params</artifactId>
-          <scope>test</scope>
-      </dependency>
-    <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>${logback.version}</version>
-        <scope>test</scope>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${logback.version}</version>
-        <scope>test</scope>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>${logback.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.6.2</version>
-          <configuration>
-          </configuration>
-        </plugin>
       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.15.0</version>
-          <configuration>
-            <source>21</source>
-            <target>21</target>
-          </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.6.2</version>
+        <executions>
+          <execution>
+            <id>enforce</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>[3.6.3,)</version>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[21,)</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.12.0</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.15.0</version>
       </plugin>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.12.0</version>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -164,9 +176,9 @@
         <configuration>
           <forkCount>8</forkCount>
           <reuseForks>true</reuseForks>
+          <skipTests>${skipTests}</skipTests>
         </configuration>
       </plugin>
-
     </plugins>
   </build>
 </project>
