@@ -20,10 +20,14 @@ see also:
 
 # videos
 - [duckdb: crunching data anywhere](https://www.youtube.com/watch?v=9Rdwh0rNaf0)
+- [DuckDB in 100 Seconds](https://www.youtube.com/watch?v=uHm6FEb2Re4) - Fireship
+- [DuckDB Tutorial For Beginners In 12 min](https://www.youtube.com/watch?v=ZX5FdqzGT1E) - MotherDuck
 - [Motherduck - data analytics](https://www.youtube.com/watch?v=hZiTg_995e4)
 - [DuckDB and MotherDuck](https://www.youtube.com/watch?v=tip96F_u8lc)
 - [Processing Trillions of Records at Okta](https://www.youtube.com/watch?v=TrmJilG4GXk)
 - [Scaling DuckDb in the Cloud](https://www.youtube.com/watch?v=wIOYAIgPdqw) - MotherDuck
+- [DuckCon #4 - Amsterdam, February 2024](https://www.youtube.com/playlist?list=PLzIMXBizEZjhZcTiEFZIAxPpB6RE9TmgC)
+- [DuckCon #5 - Seattle, August 2024](https://www.youtube.com/playlist?list=PLzIMXBizEZjhbacz4PWGuCUSxizmLei8Y)
 
 
 
